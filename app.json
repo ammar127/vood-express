@@ -9,10 +9,6 @@
       "description": "Allowed cors origins separated with comma",
       "value": "http://localhost:8000"
     },
-    "SENTRY_DSN": {
-      "description": "Only required if NODE_ENV is equal to production",
-      "required": false
-    },
     "JWT_SECRET_KEY": {
       "description": "Secret key for JWT",
       "generator": "secret"
@@ -55,7 +51,7 @@
     },
     "DEFAULT_MAIL_SENDER": {
       "description": "Default mail sander profile",
-      "value": "Express Starter <mail@example.com>"
+      "value": "VoodVR <mail@example.com>"
     }
   },
   "options": {

@@ -46,6 +46,14 @@ export default function (sequelize) {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    // username
+    // image
+    // cover
+    // stripe_customer_id
+    // role
+    // status
+    // stripe_subscription_id
+
   }, {
     modelName: 'user',
     sequelize,
@@ -61,7 +69,7 @@ export default function (sequelize) {
   User.addHook('afterCreate', (instance) => {
     // Send welcome message to user.
     const payload = {
-      subject: 'Welcome to Express Starter',
+      subject: 'Welcome to VoodVR',
       html: 'Your account is created successfully!',
     };
     instance.sendMail(payload);

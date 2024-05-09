@@ -1,9 +1,9 @@
 {
   "swagger" : "2.0",
   "info" : {
-    "description" : "Documantation of express starter api.",
+    "description" : "Documantation of VoodVR api.",
     "version" : "1.0.0",
-    "title" : "Express Starter API",
+    "title" : "VoodVR API",
     "contact" : {
       "email" : "mucahitnezir@gmail.com"
     },

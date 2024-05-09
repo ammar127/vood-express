@@ -10,6 +10,10 @@ router.post('/login', validate(authValidations.loginRules), authController.login
 
 router.post('/register', validate(authValidations.registerRules), authController.register);
 
+router.post('/google', validate(authValidations.googleRules), authController.googleLogin);
+
+router.post('/facebook', validate(authValidations.facebookRules), authController.facebookLogin);
+
 router.route('/me')
   .get(isAuthenticated, authController.getCurrentUser)
   .put(isAuthenticated, validate(authValidations.updateProfileRules), authController.updateCurrentUser)

@@ -5,6 +5,16 @@ export const loginRules = [
   body('password').exists(),
 ];
 
+export const googleRules = [
+  body('token').exists(),
+];
+
+export const facebookRules = [
+  body('firstName').exists(),
+  body('lastName').exists(),
+  body('email').isEmail().exists(),
+];
+
 export const registerRules = [
   body('firstName').exists(),
   body('lastName').exists(),
