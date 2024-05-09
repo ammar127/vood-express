@@ -1,6 +1,6 @@
 import createError from 'http-errors';
-
 import db from '@/database';
+import axios from 'axios';
 
 /**
  * POST /auth/login
@@ -112,6 +112,66 @@ export const updatePassword = async (req, res, next) => {
     await req.user.save();
 
     return res.json({ success: true });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+/**
+ * POST /auth/google
+ * Google login request
+ */
+export const googleLogin = async (req, res, next) => {
+  try {
+    const { token: authToken } = req.body;
+    const { data: profile } = await axios.get('https://www.googleapis.com/oauth2/v1/userinfo', {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+    const { email } = profile;
+    let user = await db.models.user.findOne({ where: { email } });
+    if (!user) {
+      // create new user
+      const newUser = await db.models.user.create({
+        firstName: profile.given_name,
+        lastName: profile.family_name,
+        email: profile.email,
+        password: 'google',
+      });
+      user = newUser;
+    }
+    // Generate and return token
+    const token = user.generateToken();
+    const refreshToken = user.generateToken('2h');
+    return res.status(200).json({ token, refreshToken });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+/**
+ * POST /auth/facebook
+ * Facebook login request
+ */
+
+export const facebookLogin = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    // Find user by email address
+    let user = await db.models.user.findOne({ where: { email } });
+    if (!user) {
+      // create new user
+      const newUser = await db.models.user.create({ ...req.body, password: 'facebook' }, {
+        fields: ['firstName', 'lastName', 'email', 'password'],
+      });
+      user = newUser;
+    }
+
+
+    // Generate and return token
+    const token = user.generateToken();
+    const refreshToken = user.generateToken('2h');
+    return res.status(200).json({ token, refreshToken });
   } catch (err) {
     return next(err);
   }
