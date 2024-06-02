@@ -22,6 +22,7 @@
   "dependencies": {
     "@sentry/node": "^6.7.2",
     "@sentry/tracing": "^6.7.2",
+    "aws-sdk": "^2.1632.0",
     "axios": "^1.6.8",
     "bcrypt": "^5.0.0",
     "compression": "^1.7.4",

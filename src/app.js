@@ -6,6 +6,7 @@ import express from 'express';
 import compression from 'compression';
 import createError from 'http-errors';
 import cookieParser from 'cookie-parser';
+import AWS from 'aws-sdk';
 
 import * as configs from './config';
 import { authenticationMiddleware } from './middleware';
@@ -27,7 +28,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors(configs.corsConfig));
 app.use(compression(configs.compressionConfig));
 app.use(cookieParser());
-
+AWS.config.update(configs.awsConfig);
+AWS.config.logger = console;
 // Custom middleware list
 app.use(authenticationMiddleware);
 // if (NODE_ENV !== 'development') {
