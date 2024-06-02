@@ -1,25 +1,86 @@
-import { DataTypes, Model } from 'sequelize';
+const { Model } = require('sequelize');
 
-export default function (sequelize) {
-  class Tweet extends Model {
+module.exports = (sequelize, DataTypes) => {
+  class Video extends Model {
     static associate(models) {
-      Tweet.belongsTo(models.user, { foreignKey: 'userId' });
+      Video.belongsTo(models.User, { foreignKey: 'userId' });
+      Video.hasMany(models.Like, { foreignKey: 'videoId' });
+      Video.hasMany(models.Dislike, { foreignKey: 'videoId' });
+      Video.hasMany(models.View, { foreignKey: 'videoId' });
     }
   }
-
-  Tweet.init({
+  Video.init({
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    tweet: {
-      type: DataTypes.STRING(140),
+    title: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
+    categories: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: [],
+    },
+    fileKey: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    convertedFileKey: {
+      type: DataTypes.STRING,
+      defaultValue: null,
+    },
+    thumbnailKey: {
+      type: DataTypes.STRING,
+      defaultValue: null,
+    },
+    visibility: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
+    },
+    playerType: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
+    },
+    progress: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    duration: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    noOfFrame: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    isConvert: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    createdAt: {
+      allowNull: false,
+      type: DataTypes.DATE,
+    },
+    updatedAt: {
+      allowNull: false,
+      type: DataTypes.DATE,
+    },
+    deletedAt: {
+      allowNull: true,
+      type: DataTypes.DATE,
+    },
   }, {
-    modelName: 'tweet',
     sequelize,
+    modelName: 'Video',
   });
-
-  return Tweet;
-}
+  return Video;
+};
