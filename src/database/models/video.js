@@ -1,12 +1,12 @@
-const { Model } = require('sequelize');
+import { DataTypes, Model } from 'sequelize';
 
-module.exports = (sequelize, DataTypes) => {
+export default function (sequelize) {
   class Video extends Model {
     static associate(models) {
-      Video.belongsTo(models.User, { foreignKey: 'userId' });
-      Video.hasMany(models.Like, { foreignKey: 'videoId' });
-      Video.hasMany(models.Dislike, { foreignKey: 'videoId' });
-      Video.hasMany(models.View, { foreignKey: 'videoId' });
+      Video.belongsTo(models.user, { foreignKey: 'userId' });
+      Video.hasMany(models.like, { foreignKey: 'videoId' });
+      Video.hasMany(models.dislike, { foreignKey: 'videoId' });
+      Video.hasMany(models.view, { foreignKey: 'videoId' });
     }
   }
   Video.init({
@@ -58,13 +58,29 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
-    noOfFrame: {
+    width: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
+    },
+    height: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    frameCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    aspectRatio: {
+      type: DataTypes.STRING,
+      defaultValue: '',
     },
     isConvert: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
+    },
+    transaction_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     createdAt: {
       allowNull: false,
@@ -80,7 +96,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'Video',
+    modelName: 'video',
   });
   return Video;
-};
+}

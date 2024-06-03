@@ -32,3 +32,7 @@ export const changePasswordRules = [
   body('current').exists(),
   body('password').isLength({ min: 6 }).exists(),
 ];
+
+export const refreshTokenRules = [
+  body('refreshToken').exists(),
+];

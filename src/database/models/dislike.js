@@ -1,9 +1,10 @@
-const { Model } = require('sequelize');
+import { DataTypes, Model } from 'sequelize';
 
-module.exports = (sequelize, DataTypes) => {
+
+export default function (sequelize) {
   class Dislike extends Model {
     static associate(models) {
-      Dislike.belongsTo(models.Video, { foreignKey: 'videoId' });
+      Dislike.belongsTo(models.video, { foreignKey: 'videoId' });
     }
   }
   Dislike.init({
@@ -25,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'Dislike',
+    modelName: 'dislike',
   });
   return Dislike;
-};
+}

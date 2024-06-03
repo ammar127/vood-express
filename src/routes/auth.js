@@ -14,6 +14,8 @@ router.post('/google', validate(authValidations.googleRules), authController.goo
 
 router.post('/facebook', validate(authValidations.facebookRules), authController.facebookLogin);
 
+router.post('/refresh-token', validate(authValidations.refreshTokenRules), authController.getRefreshToken);
+
 router.route('/me')
   .get(isAuthenticated, authController.getCurrentUser)
   .put(isAuthenticated, validate(authValidations.updateProfileRules), authController.updateCurrentUser)

@@ -25,6 +25,10 @@ export default function (sequelize) {
 
     static associate(models) {
       User.hasMany(models.tweet, { foreignKey: 'userId' });
+      // User.hasMany(models.video, { foreignKey: 'userId' });
+      // User.hasMany(models.like, { foreignKey: 'userId' });
+      // User.hasMany(models.dislike, { foreignKey: 'userId' });
+      // User.hasMany(models.view, { foreignKey: 'userId' });
     }
   }
 

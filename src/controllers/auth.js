@@ -1,6 +1,7 @@
 import createError from 'http-errors';
 import db from '@/database';
 import axios from 'axios';
+import { tokenHelper } from '@/helpers';
 
 /**
  * POST /auth/login
@@ -176,3 +177,22 @@ export const facebookLogin = async (req, res, next) => {
     return next(err);
   }
 };
+
+export const getRefreshToken = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+    const tokenData = await tokenHelper.verifyToken(refreshToken);
+
+    // Find user from database
+    const user = await db.models.user.findByPk(tokenData.id).catch(() => null);
+
+    if (!user) {
+      return next(createError(400, 'Invalid refresh token!'));
+    }
+    const newToken = user.generateToken();
+    const newRefreshToken = user.generateToken('2h');
+    return res.status(200).json({ token: newToken, refreshToken: newRefreshToken });
+  } catch (err) {
+    return next(err);
+  }
+}

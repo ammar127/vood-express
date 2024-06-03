@@ -1,7 +1,8 @@
 import createError from 'http-errors';
-import { getSignedUrl } from '@/helpers/s3Client';
+import { getObjectStream, getSignedUrl, s3 } from '@/helpers/s3Client';
 import db from '@/database';
 import redisClient from '@/libs/redis';
+import { createSessionURLProduct } from '@/helpers/stripe';
 
 export const getSignedUrls = async (req, res, next) => {
   const {
@@ -28,19 +29,21 @@ export const createVideo = async (req, res, next) => {
   try {
     // const { id: userId } = req.user;
     const userId = 1;
-    // Create tweet
+    // Create Video
     const videoData = { ...req.body, userId };
-    const tweet = await db.models.tweet
-      .create(videoData, {
-        fields: ['userId', 'tweet'],
-      });
 
-    // Save this tweet to redis
-    if (redisClient.connected) {
-      redisClient.set(`Tweet:${tweet.id}`, JSON.stringify(tweet));
-    }
-    return res.status(201).json(tweet);
+    const video = await db.models.video.create(videoData);
+
+    const redirectUrl = await createSessionURLProduct({
+      duration: video.duration,
+      framesCount: video.framesCount,
+      email: 'ammar@mailinator.com',
+      id: video.id,
+    });
+
+    return res.status(201).json({ redirectUrl, video });
   } catch (err) {
+    console.log('🚀 ~ createVideo ~ err:', err);
     return next(err);
   }
 };
