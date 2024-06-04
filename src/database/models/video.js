@@ -97,6 +97,7 @@ export default function (sequelize) {
   }, {
     sequelize,
     modelName: 'video',
+    paranoid: false,
   });
   return Video;
 }

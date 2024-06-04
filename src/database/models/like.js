@@ -26,6 +26,7 @@ export default function (sequelize) {
   }, {
     sequelize,
     modelName: 'like',
+    paranoid: false,
   });
   return Like;
 }

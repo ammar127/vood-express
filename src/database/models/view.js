@@ -26,6 +26,7 @@ export default function (sequelize) {
   }, {
     sequelize,
     modelName: 'view',
+    paranoid: false,
   });
   return View;
 }

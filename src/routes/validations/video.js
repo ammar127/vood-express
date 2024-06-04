@@ -1,4 +1,4 @@
-import { body, query } from 'express-validator';
+import { body, param, query } from 'express-validator';
 
 export const listVideosRules = [
   query('page').optional().isInt().toInt(),
@@ -33,4 +33,12 @@ export const createVideoRules = [
   body('aspectRatio').optional().isString().withMessage('Aspect ratio must be a string'),
 
 
+];
+
+export const relatedVideosRules = [
+  param('id').exists().withMessage('Video ID is required').isInt(),
+];
+
+export const getVideoRules = [
+  param('id').exists().withMessage('Video ID is required').isInt(),
 ];

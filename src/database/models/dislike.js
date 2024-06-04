@@ -27,6 +27,7 @@ export default function (sequelize) {
   }, {
     sequelize,
     modelName: 'dislike',
+    paranoid: false,
   });
   return Dislike;
 }
