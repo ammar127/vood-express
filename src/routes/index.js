@@ -10,6 +10,8 @@ router.get('/', homeController.index);
 
 router.get('/health', homeController.healthCheck);
 
+router.get('/populate', homeController.populateDB);
+
 router.use('/docs', swaggerUi.serve);
 router.get('/docs', swaggerUi.setup(swaggerDocument));
 

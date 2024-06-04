@@ -195,4 +195,4 @@ export const getRefreshToken = async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
-}
+};
