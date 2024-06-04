@@ -255,11 +255,11 @@ export const getVideoById = async (req, res, next) => {
         include: [
           [
             sequelize.fn('COUNT', sequelize.literal('DISTINCT views.id')),
-            'viewsCount'
+            'viewsCount',
           ],
           [
             sequelize.fn('COUNT', sequelize.literal('DISTINCT likes.id')),
-            'likesCount'
+            'likesCount',
           ],
         ],
       },
@@ -322,7 +322,6 @@ export const getVideoById = async (req, res, next) => {
 
     return res.json(response);
   } catch (error) {
-    console.log("🚀 ~ getVideoById ~ error:", error)
     return next(error);
   }
 };

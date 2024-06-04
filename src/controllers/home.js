@@ -55,7 +55,6 @@ export const populateDB = async (req, res) => {
 
     res.status(200).send('Random users and videos created successfully!');
   } catch (error) {
-    console.error('Error creating random data:', error);
     res.status(500).send('An error occurred while creating random data.');
   }
 };

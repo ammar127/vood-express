@@ -37,7 +37,6 @@ export const createVideoPaymentIntent = async (req, res, next) => {
 
     res.json({ clientSecret: paymentIntent.client_secret, amount: paymentIntent.amount, ...paymentIntent });
   } catch (err) {
-    console.log("🚀 ~ createVideoPaymentIntent ~ err:", err)
     next(err);
   }
 };
