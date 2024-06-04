@@ -274,11 +274,14 @@ export const getVideoById = async (req, res, next) => {
           attributes: [],
           required: false,
         },
+        {
+          model: db.models.user,
+          required: true,
+        },
       ],
-      group: ['video.id'],
+      group: ['video.id', 'user.id'],
       subQuery: false,
     });
-    
 
     if (!video) {
       return res.status(404).json({ message: 'Video not found' });
