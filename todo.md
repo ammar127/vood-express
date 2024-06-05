@@ -15,3 +15,17 @@ Following
 Follow someone
 Connect Stripe
 Payment on Folllow  
+
+# Master username
+# postgres
+# Master password
+# YInAJsboixztXivZSDGM
+# Endpoint
+# vood.cptajih85xam.us-west-2.rds.amazonaws.com
+
+# Production DB User
+# DB_NAME=vood_vr
+# DB_USER=vood_vr
+# DB_PASSWORD=kurabiyecokgizli
+# DB_HOST=vood.cptajih85xam.us-west-2.rds.amazonaws.com
+# DB_PORT=5432
