@@ -51,7 +51,7 @@ export const getMostWatchedVideos = async (req, res, next) => {
   const { page = pageNumber, perPage = pageSize } = req.query;
 
   try {
-    const { count, rows: videos } = await db.models.video.findAndCountAll({
+    const { count: videoCount, rows: videos } = await db.models.video.findAndCountAll({
       attributes: {
         include: [
           [sequelize.fn('COUNT', sequelize.col('views.id')), 'viewsCount'],
@@ -70,6 +70,9 @@ export const getMostWatchedVideos = async (req, res, next) => {
       offset: page * perPage - perPage,
       subQuery: false,
     });
+
+    const count = videoCount.length;
+
     const response = {
       videos,
       count,
