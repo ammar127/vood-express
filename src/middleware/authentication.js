@@ -21,7 +21,44 @@ export default async function authenticate(req, res, next) {
 
   // Extract token from header
   const token = authorization.substring(7);
-  const tokenData = await tokenHelper.verifyToken(token);
+  let tokenData;
+
+  try {
+    // Verify the token
+    tokenData = await tokenHelper.verifyToken(token);
+  } catch (error) {
+    // If the token is expired and refresh token is provided
+    if (error.name === 'TokenExpiredError' && refreshToken) {
+      try {
+        const refreshTokenData = await tokenHelper.verifyToken(refreshToken);
+
+        // Find the user by ID from refresh token
+        const user = await db.models.user.findByPk(refreshTokenData.id).catch(() => null);
+
+        if (!user) {
+          return next({ status: 401, message: 'There is no user' });
+        }
+
+        // Generate new tokens
+        const newToken = user.generateToken();
+        const newRefreshToken = user.generateToken('2h');
+
+        // Set response headers
+        res.setHeader('Token', newToken);
+        res.setHeader('RefreshToken', newRefreshToken);
+
+        // Set request user
+        req.user = user;
+
+        // Go to next middleware
+        return next();
+      } catch (refreshError) {
+        return next({ status: 401, message: 'Invalid refresh token' });
+      }
+    }
+
+    return next({ status: 401, message: 'Invalid or expired token' });
+  }
 
   // Find user from database
   const user = await db.models.user.findByPk(tokenData.id).catch(() => null);

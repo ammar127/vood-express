@@ -1,8 +1,8 @@
-import { getSignedUrl } from '@/helpers/s3Client';
+import { getSignedUrl, getSignedUrlForRead } from '@/helpers/s3Client';
 import db from '@/database';
 import { createSessionURLProduct } from '@/helpers/stripe';
 import { pageNumber, pageSize } from '@/constant';
-import sequelize, { Op } from 'sequelize';
+import sequelize, { Op, Sequelize } from 'sequelize';
 
 export const getSignedUrls = async (req, res, next) => {
   const {
@@ -244,11 +244,10 @@ export const getRelatedVideos = async (req, res, next) => {
 
   try {
     // Retrieve the categories of the specified video
-    const { categories } = await db.models.video.findByPk(videoId, {
+    const { categories } = await db.models.video.findByPk(+videoId, {
       attributes: ['categories'],
     });
 
-    // If categories are found
     if (categories && categories.length > 0) {
       const numberOfRelatedVideos = 10; // Specify the number of related videos you want to fetch
 
@@ -258,7 +257,7 @@ export const getRelatedVideos = async (req, res, next) => {
           id: { [Op.ne]: videoId }, // Exclude the current video
           categories: { [Op.overlap]: categories }, // Find videos with overlapping categories
         },
-        order: sequelize.random(), // Order randomly
+        order: Sequelize.literal('random()'),  // Order randomly
         limit: numberOfRelatedVideos, // Limit the number of related videos
       });
 
@@ -338,7 +337,7 @@ export const getVideoById = async (req, res, next) => {
       meDisliked = userDisliked ? userDisliked.disliked : null;
     }
 
-
+    const { url, headData } = await getSignedUrlForRead(video.fileKey);
     // Construct the response object
     const response = {
       ...JSON.parse(JSON.stringify(video)),
@@ -347,6 +346,8 @@ export const getVideoById = async (req, res, next) => {
       // commentCount: video.Comments ? video.Comments.commentCount : 0,
       meLiked,
       meDisliked,
+      videoSignedUrl: url,
+      contentType: headData.ContentType,
     };
 
     return res.json(response);

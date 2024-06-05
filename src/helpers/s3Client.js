@@ -27,3 +27,13 @@ export const deleteObject = (key) => {
   };
   return s3.deleteObject(params).promise();
 };
+
+export const getSignedUrlForRead = async (key) => {
+  const params = {
+    Bucket: process.env.AWS_S3_BUCKET,
+    Key: key,
+  };
+  const headData = await s3.headObject(params).promise();
+  const url = s3.getSignedUrl('getObject', params);
+  return { url, headData };
+};
