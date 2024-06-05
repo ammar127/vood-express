@@ -51,7 +51,7 @@ export const getMostWatchedVideos = async (req, res, next) => {
   const { page = pageNumber, perPage = pageSize } = req.query;
 
   try {
-    const videos = await db.models.video.findAll({
+    const { count, rows: videos } = await db.models.video.findAndCountAll({
       attributes: {
         include: [
           [sequelize.fn('COUNT', sequelize.col('views.id')), 'viewsCount'],
@@ -70,7 +70,12 @@ export const getMostWatchedVideos = async (req, res, next) => {
       offset: page * perPage - perPage,
       subQuery: false,
     });
-    return res.json(videos);
+    const response = {
+      videos,
+      count,
+      hasMore: count > page * perPage,
+    };
+    return res.json(response);
   } catch (error) {
     return next(error);
   }
@@ -78,12 +83,17 @@ export const getMostWatchedVideos = async (req, res, next) => {
 export const getLatestVideos = async (req, res, next) => {
   const { page = pageNumber, perPage = pageSize } = req.query;
   try {
-    const videos = await db.models.video.findAll({
+    const { count, rows: videos } = await db.models.video.findAndCountAll({
       order: [['createdAt', 'DESC']],
       limit: perPage,
       offset: page * perPage - perPage,
     });
-    return res.json(videos);
+    const response = {
+      videos,
+      count,
+      hasMore: count > page * perPage,
+    };
+    return res.json(response);
   } catch (error) {
     return next(error);
   }
@@ -104,13 +114,18 @@ export const searchVideos = async (req, res, next) => {
       };
     }
 
-    const videos = await db.models.video.findAll({
+    const { count, rows: videos } = await db.models.video.findAndCountAll({
       where: whereClause,
       order: [['createdAt', 'DESC']],
       limit: perPage,
       offset: (page - 1) * perPage,
     });
-    return res.json(videos);
+    const response = {
+      videos,
+      count,
+      hasMore: count > page * perPage,
+    };
+    return res.json(response);
   } catch (error) {
     return next(error);
   }
@@ -123,7 +138,7 @@ export const getFeed = async (req, res, next) => {
     let whereClause = {}; // Initialize an empty object for the where clause
 
     // If searchTerm is provided, add a condition to filter records based on the searchTerm
-    if (searchTerm) {
+    if (searchTerm && searchTerm !== 'undefined' && searchTerm !== 'null' && searchTerm !== 'NaN') {
       whereClause = {
         // Add conditions to search in specific columns, adjust as per your schema
         [Op.or]: [
@@ -134,14 +149,19 @@ export const getFeed = async (req, res, next) => {
       };
     }
 
-    const videos = await db.models.video.findAll({
+    const { count, rows: videos } = await db.models.video.findAndCountAll({
       where: whereClause, // Apply the where clause for filtering based on searchTerm
       order: [['createdAt', 'DESC']],
       limit: perPage,
       offset: (page - 1) * perPage,
     });
 
-    return res.json(videos);
+    const response = {
+      videos,
+      count,
+      hasMore: count > page * perPage,
+    };
+    return res.json(response);
   } catch (error) {
     return next(error);
   }
@@ -161,7 +181,7 @@ export const getLibrary = async (req, res, next) => {
     let whereClause = { userId }; // Filter videos by userId
 
     // If searchTerm is provided, add conditions to search in specific columns
-    if (searchTerm) {
+    if (searchTerm && searchTerm !== 'undefined' && searchTerm !== 'null' && searchTerm !== 'NaN') {
       whereClause = {
         ...whereClause,
         [Op.or]: [
@@ -173,21 +193,26 @@ export const getLibrary = async (req, res, next) => {
     }
 
     // If status is provided, filter videos by status
-    if (status) {
+    if (status && status !== 'undefined' && status !== 'null' && status !== 'NaN') {
       whereClause = {
         ...whereClause,
         status: +status,
       };
     }
 
-    const videos = await db.models.video.findAll({
+    const { count, rows: videos } = await db.models.video.findAndCountAll({
       where: whereClause,
       order: [['createdAt', 'DESC']],
       limit: perPage,
       offset: (page - 1) * perPage,
     });
 
-    return res.json(videos);
+    const response = {
+      videos,
+      count,
+      hasMore: count > page * perPage,
+    };
+    return res.json(response);
   } catch (error) {
     return next(error);
   }
