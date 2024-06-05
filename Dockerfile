@@ -1,30 +1,23 @@
-# Builder image
-FROM node:16-alpine AS builder
+# Use the latest Node.js image as the base
+FROM node:latest
 
-COPY package.json ./app/
-COPY yarn.lock ./app/
-
-WORKDIR /app
-
-RUN yarn install
-
-COPY . .
-
-RUN yarn run build
-
-# Production image
-FROM node:16-alpine
-
-COPY package.json ./usr/src/app/
-COPY yarn.lock ./usr/src/app/
-
+# Set the working directory in the container
 WORKDIR /usr/src/app
 
-RUN yarn install --production --frozen-lockfile
+# Copy package.json and package-lock.json to the working directory
+COPY package.json package-lock.json ./
 
-COPY --from=builder /app/dist/ ./dist/
-COPY swagger.json ./
+# Install dependencies
+RUN npm install
 
+# Copy the rest of the application code
+COPY . .
+
+# Transpile the application using Babel
+RUN npm run build
+
+# Expose port 3000
 EXPOSE 3000
 
-ENTRYPOINT [ "yarn", "start" ]
+# Command to run the application
+CMD ["npm", "start"]
