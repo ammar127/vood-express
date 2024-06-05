@@ -80,6 +80,7 @@ export const getMostWatchedVideos = async (req, res, next) => {
     return next(error);
   }
 };
+
 export const getLatestVideos = async (req, res, next) => {
   const { page = pageNumber, perPage = pageSize } = req.query;
   try {
