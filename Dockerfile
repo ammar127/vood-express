@@ -1,31 +1,26 @@
-# Builder image
-FROM node:16-alpine AS builder
+# Use the official Node.js 20 image as the base image
+FROM node:20
 
-COPY package.json ./app/
-COPY yarn.lock ./app/
-
-WORKDIR /app
-
-RUN yarn install
-
-COPY . .
-
-RUN yarn run build
-
-# Production image
-FROM node:16-alpine
-
-COPY package.json ./usr/src/app/
-COPY yarn.lock ./usr/src/app/
-
+# Set the working directory
 WORKDIR /usr/src/app
 
-RUN yarn install --prod
+# Copy package.json and package-lock.json
+COPY package*.json ./
 
-COPY --from=builder /app/dist/ ./dist/
+# Install dependencies
+RUN npm install
 
-COPY swagger.json ./
+# Copy the source files to the working directory
+COPY . .
 
+# Run the build process using Webpack
+RUN npm run build
+
+# Run database migrations
+RUN npm run db:migrate
+
+# Expose the port the app runs on
 EXPOSE 3000
 
-ENTRYPOINT [ "yarn", "start" ]
+# Start the application
+CMD ["npm", "run", "start"]
