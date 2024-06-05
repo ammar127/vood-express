@@ -1,6 +1,10 @@
+# This is a basic workflow to help you get started with Actions
+
 name: Release CI/CD
 
+# Controls when the action will run. 
 on:
+  # Triggers the workflow on push or pull request events but only for the development branch
   push:
     branches: [ main ]
   workflow_dispatch:
@@ -8,35 +12,14 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Use Node.js 20
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v2
+      - uses: vitr/actions-build-and-upload-to-ecs@master
         with:
-          node-version: 20
-
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Log in to Amazon ECR
-        run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-
-      - name: Build and push Docker image to Amazon ECR
-        id: build-and-push
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: |
-            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.AWS_REPO }}:latest
-            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.AWS_REPO }}:${{ github.sha }}
-
-      - name: Store Docker image digest
-        run: echo "${{ steps.build-and-push.outputs.digest }}" >> image_digest.txt
-
-      - name: Output Docker image digest
-        run: cat image_digest.txt
+          access_key_id: ${{secrets.AWS_ACCESS_KEY}}
+          secret_access_key: ${{secrets.AWS_SECRET_KEY}}
+          account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+          repo: ${{ secrets.REPO }}
+          region: ${{ secrets.REGION }}
+          tags: latest,${{ github.sha }}
+          create_repo: true
