@@ -27,7 +27,7 @@ export const getSignedUrls = async (req, res, next) => {
  */
 export const createVideo = async (req, res, next) => {
   try {
-    const userId = 1;
+    const userId = req.user.id;
 
     const videoData = { ...req.body, userId };
 
