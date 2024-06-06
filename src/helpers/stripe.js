@@ -35,8 +35,8 @@ export const createSessionURLProduct = async ({
     customer_email: email,
     mode: 'payment',
     payment_method_types: ['card'],
-    success_url: `${process.env.CLIENT_ORIGIN}/add?success=true`,
-    cancel_url: `${process.env.CLIENT_ORIGIN}/add?canceled=true`,
+    success_url: `${process.env.CLIENT_ORIGIN}/payment?transaction_id={CHECKOUT_SESSION_ID}&success=true`,
+    cancel_url: `${process.env.CLIENT_ORIGIN}/payment?transaction_id={CHECKOUT_SESSION_ID}&cancel=true`,
     client_reference_id: id,
   });
 
