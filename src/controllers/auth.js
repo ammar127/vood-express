@@ -25,7 +25,7 @@ export const login = async (req, res, next) => {
 
     // Generate and return token
     const token = user.generateToken();
-    const refreshToken = user.generateToken('2h');
+    const refreshToken = user.generateToken('1yr');
     return res.status(200).json({ token, refreshToken });
   } catch (err) {
     return next(err);
@@ -46,7 +46,7 @@ export const register = async (req, res, next) => {
 
     // Generate and return tokens
     const token = user.generateToken();
-    const refreshToken = user.generateToken('2h');
+    const refreshToken = user.generateToken('1yr');
     res.status(201).json({ token, refreshToken });
   } catch (err) {
     next(err);
@@ -142,7 +142,7 @@ export const googleLogin = async (req, res, next) => {
     }
     // Generate and return token
     const token = user.generateToken();
-    const refreshToken = user.generateToken('2h');
+    const refreshToken = user.generateToken('1yr');
     return res.status(200).json({ token, refreshToken });
   } catch (err) {
     return next(err);
@@ -171,7 +171,7 @@ export const facebookLogin = async (req, res, next) => {
 
     // Generate and return token
     const token = user.generateToken();
-    const refreshToken = user.generateToken('2h');
+    const refreshToken = user.generateToken('1yr');
     return res.status(200).json({ token, refreshToken });
   } catch (err) {
     return next(err);
@@ -190,7 +190,7 @@ export const getRefreshToken = async (req, res, next) => {
       return next(createError(400, 'Invalid refresh token!'));
     }
     const newToken = user.generateToken();
-    const newRefreshToken = user.generateToken('2h');
+    const newRefreshToken = user.generateToken('1yr');
     return res.status(200).json({ token: newToken, refreshToken: newRefreshToken });
   } catch (err) {
     return next(err);

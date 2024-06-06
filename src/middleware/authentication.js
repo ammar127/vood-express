@@ -41,7 +41,7 @@ export default async function authenticate(req, res, next) {
 
         // Generate new tokens
         const newToken = user.generateToken();
-        const newRefreshToken = user.generateToken('2h');
+        const newRefreshToken = user.generateToken('1yr');
 
         // Set response headers
         res.setHeader('Token', newToken);
@@ -86,7 +86,7 @@ export default async function authenticate(req, res, next) {
     if (refreshTokenData.id === tokenData.id) {
       // Generate new tokens
       const newToken = user.generateToken();
-      const newRefreshToken = user.generateToken('2h');
+      const newRefreshToken = user.generateToken('1yr');
 
       // Set response headers
       res.setHeader('Token', newToken);
