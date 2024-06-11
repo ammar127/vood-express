@@ -11,6 +11,7 @@ router.route('/signed-urls')
 
 router.get('/most-watched', validate(videoValidations.listVideosRules), videoController.getMostWatchedVideos);
 router.get('/top-videos-by-categories', videoController.getTopVideosByCategory);
+router.get('/top-categories', videoController.getTopCategoriesRoute);
 router.get('/latest', validate(videoValidations.listVideosRules), videoController.getLatestVideos);
 router.get('/search', validate(videoValidations.listVideosRules), videoController.searchVideos);
 router.get('/feed', validate(videoValidations.listVideosRules), videoController.getFeed);

@@ -74,6 +74,15 @@ const getTopCategories = async () => {
   return top5Categories;
 };
 
+export const getTopCategoriesRoute = async (req, res, next) => {
+  try {
+    const topCategories = await getTopCategories();
+    return res.json(topCategories);
+  } catch (error) {
+    return next(error);
+  }
+};
+
 export const getTopVideosByCategory = async (req, res, next) => {
   const { page = 1, perPage = 10 } = req.query;
 
