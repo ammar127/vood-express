@@ -88,9 +88,23 @@ export const getLatestVideos = async (req, res, next) => {
   const { page = pageNumber, perPage = pageSize } = req.query;
   try {
     const { count, rows: videos } = await db.models.video.findAndCountAll({
+      attributes: {
+        include: [
+          [sequelize.fn('COUNT', sequelize.col('views.id')), 'viewsCount'],
+        ],
+      },
+      include: [
+        {
+          model: db.models.view,
+          attributes: [],
+          required: false,
+        },
+      ],
+      group: ['video.id'],
       order: [['createdAt', 'DESC']],
       limit: perPage,
       offset: page * perPage - perPage,
+      subQuery: false,
     });
     const response = {
       videos,
@@ -120,9 +134,23 @@ export const searchVideos = async (req, res, next) => {
 
     const { count, rows: videos } = await db.models.video.findAndCountAll({
       where: whereClause,
+      attributes: {
+        include: [
+          [sequelize.fn('COUNT', sequelize.col('views.id')), 'viewsCount'],
+        ],
+      },
+      include: [
+        {
+          model: db.models.view,
+          attributes: [],
+          required: false,
+        },
+      ],
+      group: ['video.id'],
       order: [['createdAt', 'DESC']],
       limit: perPage,
       offset: (page - 1) * perPage,
+      subQuery: false,
     });
     const response = {
       videos,
@@ -154,10 +182,24 @@ export const getFeed = async (req, res, next) => {
     }
 
     const { count, rows: videos } = await db.models.video.findAndCountAll({
+      attributes: {
+        include: [
+          [sequelize.fn('COUNT', sequelize.col('views.id')), 'viewsCount'],
+        ],
+      },
+      include: [
+        {
+          model: db.models.view,
+          attributes: [],
+          required: false,
+        },
+      ],
+      group: ['video.id'],
       where: whereClause, // Apply the where clause for filtering based on searchTerm
       order: [['createdAt', 'DESC']],
       limit: perPage,
       offset: (page - 1) * perPage,
+      subQuery: false,
     });
 
     const response = {
@@ -205,10 +247,24 @@ export const getLibrary = async (req, res, next) => {
     }
 
     const { count, rows: videos } = await db.models.video.findAndCountAll({
+      attributes: {
+        include: [
+          [sequelize.fn('COUNT', sequelize.col('views.id')), 'viewsCount'],
+        ],
+      },
+      include: [
+        {
+          model: db.models.view,
+          attributes: [],
+          required: false,
+        },
+      ],
+      group: ['video.id'],
       where: whereClause,
       order: [['createdAt', 'DESC']],
       limit: perPage,
       offset: (page - 1) * perPage,
+      subQuery: false,
     });
 
     const response = {
@@ -228,8 +284,23 @@ export const getRecommendedVideos = async (req, res, next) => {
 
     // Retrieve recommended videos using a basic random selection approach
     const recommendedVideos = await db.models.video.findAll({
+      attributes: {
+        include: [
+          [sequelize.fn('COUNT', sequelize.col('views.id')), 'viewsCount'],
+        ],
+      },
+      include: [
+        {
+          model: db.models.view,
+          attributes: [],
+          required: false,
+        },
+      ],
+      group: ['video.id'],
       order: sequelize.random(), // Order randomly
       limit: numberOfRecommendedVideos, // Limit the number of recommended videos
+      subQuery: false,
+
     });
 
     return res.json(recommendedVideos);
@@ -253,12 +324,26 @@ export const getRelatedVideos = async (req, res, next) => {
 
       // Retrieve related videos with similar categories
       const relatedVideos = await db.models.video.findAll({
+        attributes: {
+          include: [
+            [sequelize.fn('COUNT', sequelize.col('views.id')), 'viewsCount'],
+          ],
+        },
+        include: [
+          {
+            model: db.models.view,
+            attributes: [],
+            required: false,
+          },
+        ],
+        group: ['video.id'],
         where: {
           id: { [Op.ne]: videoId }, // Exclude the current video
           categories: { [Op.overlap]: categories }, // Find videos with overlapping categories
         },
         order: Sequelize.literal('random()'),  // Order randomly
         limit: numberOfRelatedVideos, // Limit the number of related videos
+        subQuery: false,
       });
 
       return res.json(relatedVideos);
