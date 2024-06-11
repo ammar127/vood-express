@@ -49,7 +49,26 @@ app.use((req, res, next) => {
 // error handler
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-  res.status(err.status || 500).json(err);
+  // Log the error details
+  console.error(`Error status: ${err.status || 500}`);
+  console.error(`Error message: ${err.message}`);
+  if (err.stack) {
+    console.error(`Error stack: ${err.stack}`);
+  }
+
+  // Construct the error response
+  const errorResponse = {
+    status: err.status || 500,
+    message: err.message,
+  };
+
+  // Include stack trace in development mode only
+  if (app.get('env') === 'development') {
+    errorResponse.stack = err.stack;
+  }
+
+  // Send the error response
+  res.status(errorResponse.status).json(errorResponse);
 });
 
 export default app;

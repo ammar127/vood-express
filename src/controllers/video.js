@@ -47,6 +47,76 @@ export const createVideo = async (req, res, next) => {
   }
 };
 
+const getTopCategories = async () => {
+  const videos = await db.models.video.findAll({
+    attributes: ['categories'],
+  });
+
+  const categoryCount = {};
+  videos.forEach((video) => {
+    video.categories.forEach((category) => {
+      if (categoryCount[category]) {
+        categoryCount[category] += 1;
+      } else {
+        categoryCount[category] = 1;
+      }
+    });
+  });
+
+  // Convert the count object to an array and sort by count
+  const sortedCategories = Object.entries(categoryCount)
+    .sort((a, b) => b[1] - a[1])
+    .map(([category]) => category);
+
+  // Take only the top 5 categories
+  const top5Categories = sortedCategories.slice(0, 5);
+
+  return top5Categories;
+};
+
+export const getTopVideosByCategory = async (req, res, next) => {
+  const { page = 1, perPage = 10 } = req.query;
+
+  try {
+    // Find top 5 categories
+    const topCategories = await getTopCategories();
+
+    // Find videos belonging to top 5 categories
+    const videosByCategory = await Promise.all(topCategories.map(async (category) => {
+      const videos = await db.models.video.findAll({
+        attributes: {
+          include: [
+            [sequelize.fn('COUNT', sequelize.col('views.id')), 'viewsCount'],
+          ],
+        },
+        include: [
+          {
+            model: db.models.view,
+            attributes: [],
+            required: false,
+          },
+        ],
+        group: ['video.id'],
+        where: {
+          categories: {
+            [Op.contains]: [category],
+          },
+        },
+        order: [['createdAt', 'DESC']], // Adjust order as needed
+        limit: perPage,
+        offset: (page - 1) * perPage,
+        subQuery: false,
+      });
+      return { category, videos };
+    }));
+
+    return res.json(videosByCategory);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+
 export const getMostWatchedVideos = async (req, res, next) => {
   const { page = pageNumber, perPage = pageSize } = req.query;
 
@@ -164,8 +234,12 @@ export const searchVideos = async (req, res, next) => {
 };
 
 export const getFeed = async (req, res, next) => {
-  const { page = pageNumber, perPage = pageSize, searchTerm } = req.query; // Set default values for page and perPage
-
+  const {
+    page = pageNumber,
+    perPage = pageSize,
+    searchTerm,
+    category,
+  } = req.query;
   try {
     let whereClause = {}; // Initialize an empty object for the where clause
 
@@ -181,6 +255,13 @@ export const getFeed = async (req, res, next) => {
       };
     }
 
+    // If category is provided, add a condition to filter records based on the category
+    if (category && category !== 'undefined' && category !== 'null' && category !== 'NaN') {
+      // Assuming your category is stored as an array in the database
+      whereClause.categories = {
+        [Op.contains]: [category],
+      };
+    }
     const { count, rows: videos } = await db.models.video.findAndCountAll({
       attributes: {
         include: [
@@ -341,7 +422,7 @@ export const getRelatedVideos = async (req, res, next) => {
           id: { [Op.ne]: videoId }, // Exclude the current video
           categories: { [Op.overlap]: categories }, // Find videos with overlapping categories
         },
-        order: Sequelize.literal('random()'),  // Order randomly
+        order: Sequelize.literal('random()'), // Order randomly
         limit: numberOfRelatedVideos, // Limit the number of related videos
         subQuery: false,
       });
