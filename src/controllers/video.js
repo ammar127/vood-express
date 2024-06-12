@@ -575,7 +575,16 @@ export const addView = async (req, res, next) => {
     if (!video) {
       return res.status(404).json({ message: 'Video not found' });
     }
+    const existingView = await db.models.view.findOne({
+      where: {
+        userId: req.user.id,
+        videoId,
+      },
+    });
 
+    if (existingView) {
+      return res.status(200).json({ message: 'User has already viewed this video' });
+    }
     await db.models.view.create({
       userId: req.user.id,
       videoId,

@@ -28,7 +28,7 @@ router.route('/:id', validate(videoValidations.getVideoRules))
   .get(videoController.getVideoById)
   .delete(isAuthenticated, videoController.deleteVideo);
 
-router.route('/:id/views', isAuthenticated, validate(videoValidations.getVideoRules))
+router.route('/:id/view', isAuthenticated, validate(videoValidations.getVideoRules))
   .post(videoController.addView);
 
 router.route('/:id/like', isAuthenticated, validate(videoValidations.getVideoRules))
