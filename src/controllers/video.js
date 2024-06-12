@@ -489,8 +489,8 @@ export const getVideoById = async (req, res, next) => {
     if (!video) {
       return res.status(404).json({ message: 'Video not found' });
     }
-    let meLiked = null;
-    let meDisliked = null;
+    let meLiked = false;
+    let meDisliked = false;
 
     if (req.user) {
       const userLike = await db.models.like.findOne({
@@ -500,7 +500,7 @@ export const getVideoById = async (req, res, next) => {
         },
       });
 
-      meLiked = userLike ? userLike.liked : null;
+      meLiked = !!userLike;
 
       const userDisliked = await db.models.dislike.findOne({
         where: {
@@ -509,7 +509,7 @@ export const getVideoById = async (req, res, next) => {
         },
       });
 
-      meDisliked = userDisliked ? userDisliked.disliked : null;
+      meDisliked = !!userDisliked;
     }
 
     const { url, headData } = await getSignedUrlForRead(video.fileKey);
