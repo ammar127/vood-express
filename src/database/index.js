@@ -9,6 +9,7 @@ import videoModel from './models/video';
 import likeModel from './models/like';
 import dislikeModel from './models/dislike';
 import viewModel from './models/view';
+import commentModel from './models/comment';
 
 
 // Configuration
@@ -25,6 +26,7 @@ const modelDefiners = [
   likeModel,
   dislikeModel,
   viewModel,
+  commentModel,
   videoModel,
 ];
 

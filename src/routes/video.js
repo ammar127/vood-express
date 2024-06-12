@@ -3,6 +3,8 @@ import { Router } from 'express';
 import * as videoController from '@/controllers/video';
 import * as videoValidations from '@/routes/validations/video';
 import { isAuthenticated, validate } from '@/middleware';
+import commentsRouter from './comment'; // Adjust the path as necessary
+
 
 const router = Router();
 
@@ -32,5 +34,7 @@ router.route('/:id/views', isAuthenticated, validate(videoValidations.getVideoRu
 router.route('/:id/like', isAuthenticated, validate(videoValidations.getVideoRules))
   .post(videoController.likeVideo)
   .delete(videoController.unlikeVideo);
+
+router.use('/:videoId/comment', isAuthenticated, validate(videoValidations.getVideoIdRules), commentsRouter);
 
 export default router;

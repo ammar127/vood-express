@@ -29,6 +29,7 @@ export default function (sequelize) {
       User.hasMany(models.like, { foreignKey: 'userId' });
       User.hasMany(models.dislike, { foreignKey: 'userId' });
       User.hasMany(models.view, { foreignKey: 'userId' });
+      User.hasMany(models.comment, { foreignKey: 'userId' });
     }
   }
 

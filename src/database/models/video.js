@@ -7,6 +7,7 @@ export default function (sequelize) {
       Video.hasMany(models.like, { foreignKey: 'videoId' });
       Video.hasMany(models.dislike, { foreignKey: 'videoId' });
       Video.hasMany(models.view, { foreignKey: 'videoId' });
+      Video.hasMany(models.comment, { foreignKey: 'videoId' });
     }
   }
   Video.init({

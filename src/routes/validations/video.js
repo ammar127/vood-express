@@ -42,3 +42,7 @@ export const relatedVideosRules = [
 export const getVideoRules = [
   param('id').exists().withMessage('Video ID is required').isInt(),
 ];
+
+export const getVideoIdRules = [
+  param('videoId').exists().withMessage('Video ID is required').isInt(),
+];
