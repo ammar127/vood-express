@@ -51,14 +51,45 @@ export default function (sequelize) {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    // username
-    // image
-    // cover
-    // stripe_customer_id
-    // role
-    // status
-    // stripe_subscription_id
-
+    username: {
+      type: DataTypes.STRING(30),
+      allowNull: false,
+      unique: true,
+    },
+    image: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    cover: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    role: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1,
+    },
+    status: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1,
+    },
+    stripe_customer_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    stripe_account_linked_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    stripe_subscription_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    subscription_fee: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
   }, {
     modelName: 'user',
     sequelize,

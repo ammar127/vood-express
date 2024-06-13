@@ -2,6 +2,7 @@ import createError from 'http-errors';
 import db from '@/database';
 import axios from 'axios';
 import { tokenHelper } from '@/helpers';
+import { createAccount, createAccountLink } from '@/helpers/stripe';
 
 /**
  * POST /auth/login
@@ -73,7 +74,7 @@ export const getCurrentUser = async (req, res, next) => {
 export const updateCurrentUser = async (req, res, next) => {
   try {
     await req.user.update(req.body, {
-      fields: ['firstName', 'lastName', 'email'],
+      fields: ['firstName', 'lastName', 'email', 'username', 'image', 'cover'],
     });
     res.status(200).json({ success: true });
   } catch (err) {
@@ -192,6 +193,80 @@ export const getRefreshToken = async (req, res, next) => {
     const newToken = user.generateToken();
     const newRefreshToken = user.generateToken('1yr');
     return res.status(200).json({ token: newToken, refreshToken: newRefreshToken });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const connectStripe = async (req, res, next) => {
+  try {
+    const { user } = req;
+    const { email } = user;
+    const accountID = await createAccount(email);
+    // user.stripeAccountID = accountID;
+    // await user.save();
+    const url = await createAccountLink(accountID);
+    console.log('🚀 ~ connectStripe ~ url:', url);
+    return res.status(200).json(url);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const checkEmailUnique = async (req, res, next) => {
+  try {
+    const { email } = req.params;
+    const query = {
+      where: {
+        email,
+      },
+    };
+
+    if (req.user) {
+      query.id = { [db.Op.ne]: req.user.id };
+    }
+
+    const user = await db.models.user.findOne(query);
+
+    if (user) {
+      return res.json({ unique: false });
+    }
+    return res.json({ unique: true });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const checkUsernameUnique = async (req, res, next) => {
+  try {
+    const { username } = req.params;
+    const query = {
+      where: {
+        username,
+      },
+    };
+    if (req.user) {
+      query.where.id = { [db.Op.ne]: req.user.id };
+    }
+    const user = await db.models.user.findOne(query);
+
+    if (user) {
+      return res.json({ unique: false });
+    }
+    return res.json({ unique: true });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const getUserProfile = async (req, res, next) => {
+  try {
+    const { username } = req.params;
+    const user = await db.models.user.findOne({ where: { username } });
+    if (!user) {
+      return next(createError(404, 'User not found!'));
+    }
+    return res.json(user);
   } catch (err) {
     return next(err);
   }

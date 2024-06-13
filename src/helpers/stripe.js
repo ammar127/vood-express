@@ -43,4 +43,28 @@ export const createSessionURLProduct = async ({
   return session.url;
 };
 
+export const createAccount = async (email) => {
+  const account = await stripe.accounts.create({
+    type: 'express',
+    email,
+    capabilities: {
+      card_payments: { requested: true },
+      transfers: { requested: true },
+    },
+  });
+
+  return account.id;
+};
+
+export const createAccountLink = async (accountID) => {
+  const accountLink = await stripe.accountLinks.create({
+    account: accountID,
+    refresh_url: `${process.env.CLIENT_ORIGIN}/profile`,
+    return_url: `${process.env.CLIENT_ORIGIN}/profile`,
+    type: 'account_onboarding',
+  });
+
+  return accountLink.url;
+};
+
 export default stripe;

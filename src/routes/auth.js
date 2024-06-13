@@ -16,6 +16,14 @@ router.post('/facebook', validate(authValidations.facebookRules), authController
 
 router.post('/refresh-token', validate(authValidations.refreshTokenRules), authController.getRefreshToken);
 
+router.get('/connect-stripe', isAuthenticated, authController.connectStripe);
+
+router.get('/check-email/:email', authController.checkEmailUnique);
+
+router.get('/check-username/:username', authController.checkUsernameUnique);
+
+router.get('/get-user/:username', authController.getUserProfile);
+
 router.route('/me')
   .get(isAuthenticated, authController.getCurrentUser)
   .put(isAuthenticated, validate(authValidations.updateProfileRules), authController.updateCurrentUser)
