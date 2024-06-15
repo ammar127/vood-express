@@ -41,10 +41,19 @@ export const login = async (req, res, next) => {
  */
 export const register = async (req, res, next) => {
   try {
+    const { email } = req.body;
+
+    // Check if user already exists
+    const userExists = await db.models.user.findOne({ where: { email } });
+    if (userExists) {
+      return next(createError(400, 'User already exists!'));
+    }
+
+    const userObj = { ...req.body, username: req.body.firstName + Date.now() };
     // Create user
     const user = await db.models.user
-      .create(req.body, {
-        fields: ['firstName', 'lastName', 'email', 'password'],
+      .create(userObj, {
+        fields: ['firstName', 'lastName', 'email', 'password', 'username'],
       });
 
     // Generate and return tokens
@@ -139,7 +148,8 @@ export const googleLogin = async (req, res, next) => {
         firstName: profile.given_name,
         lastName: profile.family_name,
         email: profile.email,
-        password: 'google',
+        username: profile.given_name + Date.now(),
+        password: `google-${Date.now()}`,
       });
       user = newUser;
     }
@@ -165,8 +175,12 @@ export const facebookLogin = async (req, res, next) => {
     let user = await db.models.user.findOne({ where: { email } });
     if (!user) {
       // create new user
-      const newUser = await db.models.user.create({ ...req.body, password: 'facebook' }, {
-        fields: ['firstName', 'lastName', 'email', 'password'],
+      const newUser = await db.models.user.create({
+        ...req.body,
+        username: req.body.firstName + Date.now(),
+        password: `facebook-${Date.now()}`,
+      }, {
+        fields: ['firstName', 'lastName', 'email', 'password', 'username'],
       });
       user = newUser;
     }
