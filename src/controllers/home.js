@@ -34,7 +34,7 @@ const categories = [
 const videoKeys = [
   '197485-905015019_small.mp4',
   'istockphoto-485784548-640_adpp_is.mp4',
-  'istockphoto-1455749437-640_adpp_is.mp4'
+  'istockphoto-1455749437-640_adpp_is.mp4',
 ];
 const imageKeys = [
   '5.jpeg',
@@ -69,8 +69,8 @@ export const populateDB = async (req, res) => {
         userId: randomUser.id,
         title: faker.lorem.sentence(),
         categories: [categories[Math.floor(Math.random() * categories.length)]],
-        fileKey: videoKeys[Math.floor(Math.random() * videoKeys.length)], //'1717370829375-vid.mp4',
-        thumbnailKey: imageKeys[Math.floor(Math.random() * videoKeys.length)], //'1717370829376-logo.png',
+        fileKey: videoKeys[Math.floor(Math.random() * videoKeys.length)], // '1717370829375-vid.mp4',
+        thumbnailKey: imageKeys[Math.floor(Math.random() * videoKeys.length)], // '1717370829376-logo.png',
         description: faker.lorem.paragraphs(),
         duration: faker.number.int({ min: 1, max: 3600 }),
         width: faker.number.int({ min: 480, max: 1920 }),
@@ -85,7 +85,7 @@ export const populateDB = async (req, res) => {
 
     res.status(200).send('Random users and videos created successfully!');
   } catch (error) {
-    console.log("🚀 ~ populateDB ~ error:", error)
+    console.log('🚀 ~ populateDB ~ error:', error);
     res.status(500).send('An error occurred while creating random data.');
   }
 };
