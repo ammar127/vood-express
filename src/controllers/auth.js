@@ -59,9 +59,9 @@ export const register = async (req, res, next) => {
     // Generate and return tokens
     const token = user.generateToken();
     const refreshToken = user.generateToken('1yr');
-    res.status(201).json({ token, refreshToken });
+    return res.status(201).json({ token, refreshToken });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
