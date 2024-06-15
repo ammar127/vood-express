@@ -29,8 +29,11 @@ export const updateProfileRules = [
 ];
 
 export const changePasswordRules = [
-  body('current').exists(),
-  body('password').isLength({ min: 6 }).exists(),
+  body('current').exists()
+    .withMessage('Current password is required.'),
+  body('password').exists().withMessage('Password is required.')
+    .isLength({ min: 6 })
+    .withMessage('Password must be at least 6 characters long.'),
 ];
 
 export const refreshTokenRules = [

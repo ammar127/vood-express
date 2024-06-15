@@ -11,6 +11,9 @@ const router = Router();
 router.route('/signed-urls')
   .post(videoController.getSignedUrls);
 
+router.route('/signed-url')
+  .post(videoController.getFileSignedUrl);
+
 router.get('/most-watched', validate(videoValidations.listVideosRules), videoController.getMostWatchedVideos);
 router.get('/top-videos-by-categories', videoController.getTopVideosByCategory);
 router.get('/top-categories', videoController.getTopCategoriesRoute);

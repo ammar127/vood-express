@@ -18,9 +18,9 @@ router.post('/refresh-token', validate(authValidations.refreshTokenRules), authC
 
 router.get('/connect-stripe', isAuthenticated, authController.connectStripe);
 
-router.get('/check-email/:email', authController.checkEmailUnique);
+router.get('/check-email/:email', isAuthenticated, authController.checkEmailUnique);
 
-router.get('/check-username/:username', authController.checkUsernameUnique);
+router.get('/check-username/:username', isAuthenticated, authController.checkUsernameUnique);
 
 router.get('/get-user/:username', authController.getUserProfile);
 

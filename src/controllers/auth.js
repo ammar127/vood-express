@@ -1,8 +1,10 @@
+/* eslint-disable camelcase */
 import createError from 'http-errors';
 import db from '@/database';
 import axios from 'axios';
 import { tokenHelper } from '@/helpers';
 import { createAccount, createAccountLink } from '@/helpers/stripe';
+import { Op } from 'sequelize';
 
 /**
  * POST /auth/login
@@ -201,12 +203,13 @@ export const getRefreshToken = async (req, res, next) => {
 export const connectStripe = async (req, res, next) => {
   try {
     const { user } = req;
-    const { email } = user;
-    const accountID = await createAccount(email);
-    // user.stripeAccountID = accountID;
-    // await user.save();
-    const url = await createAccountLink(accountID);
-    console.log('🚀 ~ connectStripe ~ url:', url);
+    const { email, stripe_customer_id } = user;
+    if (!stripe_customer_id) {
+      const acountId = await createAccount(email);
+      user.stripe_customer_id = acountId;
+      await user.save();
+    }
+    const url = await createAccountLink(user.stripe_customer_id);
     return res.status(200).json(url);
   } catch (error) {
     return next(error);
@@ -223,7 +226,7 @@ export const checkEmailUnique = async (req, res, next) => {
     };
 
     if (req.user) {
-      query.id = { [db.Op.ne]: req.user.id };
+      query.where.id = { [Op.ne]: req.user.id };
     }
 
     const user = await db.models.user.findOne(query);
@@ -246,8 +249,9 @@ export const checkUsernameUnique = async (req, res, next) => {
       },
     };
     if (req.user) {
-      query.where.id = { [db.Op.ne]: req.user.id };
+      query.where.id = { [Op.ne]: req.user.id };
     }
+
     const user = await db.models.user.findOne(query);
 
     if (user) {

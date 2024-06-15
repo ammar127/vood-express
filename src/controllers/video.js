@@ -21,6 +21,21 @@ export const getSignedUrls = async (req, res, next) => {
   }
 };
 
+export const getFileSignedUrl = async (req, res, next) => {
+  const {
+    fileName, fileType,
+  } = req.body;
+  const fileKey = `${Date.now()}-${fileName}`;
+  try {
+    const signedUrl = await getSignedUrl(fileKey, fileType);
+    return res.json({
+      signedUrl, fileKey,
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
 /**
  * POST /video
  * Create video request
