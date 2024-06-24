@@ -34,4 +34,8 @@ router.put('/me/password',
   validate(authValidations.changePasswordRules),
   authController.updatePassword);
 
+router.get('/profile/:username',
+  validate(authValidations.getUserRules),
+  authController.getUserProfile);
+
 export default router;

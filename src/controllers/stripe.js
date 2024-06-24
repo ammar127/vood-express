@@ -66,6 +66,7 @@ export const webhook = async (req, res, next) => {
   const eventData = event.data.object;
   console.log('🚀 ~ webhook ~ eventData:', eventData);
   console.log('🚀 ~ webhook ~ event.type:', event.type);
+  res.json({ received: true });
 
 
   try {
@@ -87,4 +88,5 @@ export const webhook = async (req, res, next) => {
 
 export const accountsWebhook = async (req, res, next) => {
   console.log('🚀 ~ webhook ~ req, res, next:', req, res, next);
+  res.json({ received: true });
 };

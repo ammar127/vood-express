@@ -5,6 +5,17 @@ export const listVideosRules = [
   query('perPage').optional().isInt().toInt(),
 ];
 
+export const getVideosByUsernameRules = [
+  param('username')
+    .exists().withMessage('Username is required')
+    .isString()
+    .withMessage('Username must be a string')
+    .trim()
+    .notEmpty()
+    .withMessage('Username cannot be empty'),
+
+];
+
 export const createVideoRules = [
 
   body('title').exists().withMessage('Title is required').isString()

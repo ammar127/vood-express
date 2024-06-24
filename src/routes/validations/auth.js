@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 export const loginRules = [
   body('email').isEmail().exists(),
@@ -36,6 +36,12 @@ export const changePasswordRules = [
     .withMessage('Password must be at least 6 characters long.'),
 ];
 
+
 export const refreshTokenRules = [
   body('refreshToken').exists(),
+];
+
+export const getUserRules = [
+  param('username').exists()
+    .withMessage('username is required.'),
 ];

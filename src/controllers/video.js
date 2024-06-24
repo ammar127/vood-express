@@ -460,6 +460,52 @@ export const getRelatedVideos = async (req, res, next) => {
   }
 };
 
+export const getVideosByUsername = async (req, res, next) => {
+  const { username } = req.params;
+  console.log('🚀 ~ getVideosByUsername ~ username:', username);
+  const { page = pageNumber, perPage = pageSize } = req.query;
+
+  try {
+    const user = await db.models.user.findOne({
+      where: { username },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const { count, rows: videos } = await db.models.video.findAndCountAll({
+      where: { userId: user.id },
+      attributes: {
+        include: [
+          [sequelize.fn('COUNT', sequelize.col('views.id')), 'viewsCount'],
+        ],
+      },
+      include: [
+        {
+          model: db.models.view,
+          attributes: [],
+          required: false,
+        },
+      ],
+      group: ['video.id'],
+      order: [['createdAt', 'DESC']],
+      limit: perPage,
+      offset: (page - 1) * perPage,
+      subQuery: false,
+    });
+
+    const response = {
+      videos,
+      count,
+      hasMore: count > page * perPage,
+    };
+    return res.json(response);
+  } catch (error) {
+    return next(error);
+  }
+};
+
 /**
  * GET /tweets/:id
  * Get tweet by id

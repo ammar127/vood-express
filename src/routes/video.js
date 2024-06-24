@@ -13,6 +13,7 @@ router.route('/signed-urls')
 
 router.route('/signed-url')
   .post(videoController.getFileSignedUrl);
+router.get('/user/:username', validate(videoValidations.getVideosByUsernameRules), videoController.getVideosByUsername);
 
 router.get('/most-watched', validate(videoValidations.listVideosRules), videoController.getMostWatchedVideos);
 router.get('/top-videos-by-categories', videoController.getTopVideosByCategory);
