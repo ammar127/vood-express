@@ -13,7 +13,6 @@ router.post(
 );
 
 router.post('/webhook', stripeController.webhook);
-router.post('/accounts-webhook', stripeController.accountsWebhook);
 
 
 export default router;
