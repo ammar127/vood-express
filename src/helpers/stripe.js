@@ -43,13 +43,27 @@ export const createSessionURLProduct = async ({
   return session.url;
 };
 
-export const createAccount = async (email) => {
+export const createAccount = async ({
+  id,
+  email,
+  firstName,
+  lastName,
+}) => {
   const account = await stripe.accounts.create({
-    type: 'express',
+    type: 'standard',
     email,
-    capabilities: {
-      card_payments: { requested: true },
-      transfers: { requested: true },
+    business_type: 'individual',
+    individual: {
+      first_name: firstName,
+      last_name: lastName,
+      email,
+    },
+    business_profile: {
+      mcc: '5815', // Merchant Category Code
+      url: 'https://www.voodvr.co/',
+    },
+    metadata: {
+      id,
     },
   });
 
@@ -65,6 +79,50 @@ export const createAccountLink = async (accountID) => {
   });
 
   return accountLink.url;
+};
+
+export const createOrUpdateProductPrice = async ({
+  sellerAccountId,
+  price = null,
+  priceId = null,
+  productId = null,
+}) => {
+  let updatedProductId = productId;
+  let updatedPriceId = priceId;
+
+  if (!productId) {
+    const product = await stripe.products.create({
+      name: 'VoodVR Channel Subscription',
+      type: 'service',
+      metadata: {
+        sellerAccountId,
+      },
+    }, {
+      stripeAccount: sellerAccountId,
+    });
+    updatedProductId = product.id;
+  }
+
+  if (priceId) {
+    await stripe.prices.update(priceId, {
+      unit_amount: price * 100,
+    }, {
+      stripeAccount: sellerAccountId,
+    });
+  } else {
+    const updatedPrice = await stripe.prices.create({
+      unit_amount: price * 100,
+      currency: 'usd',
+      recurring: {
+        interval: 'month',
+      },
+      product: updatedProductId,
+    }, {
+      stripeAccount: sellerAccountId,
+    });
+    updatedPriceId = updatedPrice.id;
+  }
+  return { updatedProductId, updatedPriceId };
 };
 
 export default stripe;

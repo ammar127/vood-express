@@ -18,6 +18,8 @@ router.post('/refresh-token', validate(authValidations.refreshTokenRules), authC
 
 router.get('/connect-stripe', isAuthenticated, authController.connectStripe);
 
+router.get('/disconnect-stripe', isAuthenticated, authController.disconnectStripe);
+
 router.get('/check-email/:email', isAuthenticated, authController.checkEmailUnique);
 
 router.get('/check-username/:username', isAuthenticated, authController.checkUsernameUnique);
@@ -38,4 +40,7 @@ router.get('/profile/:username',
   validate(authValidations.getUserRules),
   authController.getUserProfile);
 
+router.get('/profile/user-subscription/:userId',
+  validate(authValidations.profileUserSubscriptionRules),
+  authController.createProfileUserSubscription);
 export default router;

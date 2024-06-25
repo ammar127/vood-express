@@ -45,3 +45,7 @@ export const getUserRules = [
   param('username').exists()
     .withMessage('username is required.'),
 ];
+export const profileUserSubscriptionRules = [
+  param('userId').exists()
+    .withMessage('user Id is required.'),
+];

@@ -1,6 +1,8 @@
 /* eslint-disable prefer-destructuring */
 // import { stripeHelper } from '@/helpers';
 import Stripe from 'stripe';
+import { startConversion } from './video';
+import { updateStripeEnabled } from './auth';
 
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -44,11 +46,30 @@ export const createVideoPaymentIntent = async (req, res, next) => {
   }
 };
 
-export const webhook = async (req, res, next) => {
+export const webhook = async (req, res) => {
   const event = req.body;
-  console.log('🚀 ~ webhook ~ event.type:', event.type);
+  // console.log('🚀 ~ webhook ~ event.data.object:', event.data.object);
+  switch (event.type) {
+    case 'payment_intent.succeeded': {
+      const paymentIntent = event.data.object;
+      console.log('🚀 ~ webhook ~ paymentIntent:', paymentIntent.client_reference_id);
 
+      await startConversion(+paymentIntent.client_reference_id);
 
+      // Handle successful payment here
+      break;
+    }
+    case 'account.updated': {
+      const account = event.data.object;
+      console.log('Account is successfully linked:', account.id, account.charges_enabled);
+      if (account.charges_enabled) {
+        await updateStripeEnabled(account.id);
+      }
+      break;
+    }
+    default:
+      console.log(`Unhandled event type ${event.type}`);
+  }
   // Return a response to acknowledge receipt of the event
   res.json({ received: true });
 };

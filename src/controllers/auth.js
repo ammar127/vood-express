@@ -217,14 +217,40 @@ export const getRefreshToken = async (req, res, next) => {
 export const connectStripe = async (req, res, next) => {
   try {
     const { user } = req;
-    const { email, stripe_customer_id } = user;
+    const { stripe_customer_id } = user;
     if (!stripe_customer_id) {
-      const acountId = await createAccount(email);
+      const acountId = await createAccount(user);
       user.stripe_customer_id = acountId;
       await user.save();
     }
     const url = await createAccountLink(user.stripe_customer_id);
     return res.status(200).json(url);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const updateStripeEnabled = async (accountId) => {
+  console.log('🚀 ~ updateStripeEnabled ~ accountId:', accountId);
+  try {
+    const user = await db.models.user.findOne({ where: { stripe_customer_id: accountId } });
+    if (user) {
+      user.stripe_account_linked_id = accountId;
+      await user.save();
+    }
+  } catch (error) {
+    console.log('Error updating stripe account linked id', error);
+  }
+};
+
+
+export const disconnectStripe = async (req, res, next) => {
+  try {
+    const { user } = req;
+    user.stripe_customer_id = null;
+    user.stripe_account_linked_id = null;
+    await user.save();
+    return res.status(200).json({ success: true });
   } catch (error) {
     return next(error);
   }
@@ -284,6 +310,22 @@ export const getUserProfile = async (req, res, next) => {
     if (!user) {
       return next(createError(404, 'User not found!'));
     }
+    return res.json(user);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const createProfileUserSubscription = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const user = await db.models.user.findOne({ where: { id: userId } });
+    if (!user) {
+      return next(createError(404, 'User not found!'));
+    }
+
+
+
     return res.json(user);
   } catch (err) {
     return next(err);

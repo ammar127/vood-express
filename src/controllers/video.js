@@ -51,7 +51,7 @@ export const createVideo = async (req, res, next) => {
     const redirectUrl = await createSessionURLProduct({
       duration: video.duration,
       framesCount: video.framesCount,
-      email: 'ammar@mailinator.com',
+      email: req.user.email,
       id: video.id,
     });
 
@@ -60,6 +60,11 @@ export const createVideo = async (req, res, next) => {
     console.log('🚀 ~ createVideo ~ err:', err);
     return next(err);
   }
+};
+
+export const startConversion = async (videoId) => {
+  console.log('🚀 ~ startConversion ~ videoId', videoId);
+  await db.models.video.update({ status: 2 }, { where: { id: videoId } });
 };
 
 const getTopCategories = async () => {
@@ -462,7 +467,6 @@ export const getRelatedVideos = async (req, res, next) => {
 
 export const getVideosByUsername = async (req, res, next) => {
   const { username } = req.params;
-  console.log('🚀 ~ getVideosByUsername ~ username:', username);
   const { page = pageNumber, perPage = pageSize } = req.query;
 
   try {
