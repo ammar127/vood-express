@@ -324,9 +324,112 @@ export const createProfileUserSubscription = async (req, res, next) => {
       return next(createError(404, 'User not found!'));
     }
 
+    let subscription = await db.models.userSubscription.findOne({
+      where: {
+        subscriberId: req.user.id,
+        channelId: userId,
+      },
+    });
+    // status can be ( 0 for deleted, 1 for active and 2 for pending, 3 for expired )
+    if (subscription && subscription.status === 0) {
+      subscription.status = 1;
+      subscription.startDate = new Date();
+      await subscription.save();
+      return res.json(subscription);
+    }
 
+    if (subscription && subscription.status === 1) {
+      return next(createError(400, 'Subscription already exists!'));
+    }
 
-    return res.json(user);
+    if (subscription && subscription.status === 2) {
+      // create payment intent and return a url to pay
+      return res.json(subscription);
+    }
+
+    if (subscription && subscription.status === 3) {
+      // create payment intent and return a url to pay
+      return res.json(subscription);
+    }
+
+    // if channel has no subscription plan then create a free subscription
+    subscription = await db.models.userSubscription.create({
+      subscriberId: req.user.id,
+      channelId: userId,
+      status: 1,
+      startDate: new Date(),
+    });
+
+    return res.json(subscription);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const cancelProfileUserSubscription = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const user = await db.models.user.findOne({ where: { id: userId } });
+    if (!user) {
+      return next(createError(404, 'User not found!'));
+    }
+
+    const subscription = await db.models.userSubscription.findOne({
+      where: {
+        subscriberId: req.user.id,
+        channelId: userId,
+      },
+    });
+
+    if (!subscription) {
+      return next(createError(404, 'Subscription not found!'));
+    }
+
+    subscription.status = 0;
+    await subscription.save();
+    return res.json(subscription);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const getMyChannelSubscriptions = async (req, res, next) => {
+  try {
+    const subscriptions = await db.models.userSubscription.findAll({
+      where: {
+        channelId: req.user.id,
+        status: 1,
+      },
+      include: [
+        {
+          model: db.models.user,
+          as: 'subscriber',
+          attributes: ['id', 'username', 'image'],
+        },
+      ],
+    });
+    return res.json(subscriptions);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const getMyUserSubscriptions = async (req, res, next) => {
+  try {
+    const subscriptions = await db.models.userSubscription.findAll({
+      where: {
+        subscriberId: req.user.id,
+        status: 1,
+      },
+      include: [
+        {
+          model: db.models.user,
+          as: 'channel',
+          attributes: ['id', 'username', 'image'],
+        },
+      ],
+    });
+    return res.json(subscriptions);
   } catch (err) {
     return next(err);
   }

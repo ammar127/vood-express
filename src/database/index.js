@@ -10,6 +10,7 @@ import likeModel from './models/like';
 import dislikeModel from './models/dislike';
 import viewModel from './models/view';
 import commentModel from './models/comment';
+import userSubscriptionModel from './models/user-subscription';
 
 
 // Configuration
@@ -28,6 +29,7 @@ const modelDefiners = [
   viewModel,
   commentModel,
   videoModel,
+  userSubscriptionModel,
 ];
 
 // eslint-disable-next-line no-restricted-syntax

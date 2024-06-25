@@ -42,5 +42,11 @@ router.get('/profile/:username',
 
 router.get('/profile/user-subscription/:userId',
   validate(authValidations.profileUserSubscriptionRules),
-  authController.createProfileUserSubscription);
+  authController.createProfileUserSubscription)
+  .delete(isAuthenticated, authController.cancelProfileUserSubscription);
+
+router.get('/user-subscriptions', isAuthenticated, authController.getMyUserSubscriptions);
+
+router.get('/channel-subscriptions', isAuthenticated, authController.getMyChannelSubscriptions);
+
 export default router;
