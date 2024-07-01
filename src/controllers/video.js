@@ -556,6 +556,7 @@ export const getVideoById = async (req, res, next) => {
     }
     let meLiked = false;
     let meDisliked = false;
+    let mySubscription = false;
 
     if (req.user) {
       const userLike = await db.models.like.findOne({
@@ -575,17 +576,26 @@ export const getVideoById = async (req, res, next) => {
       });
 
       meDisliked = !!userDisliked;
+
+      const userSubscription = await db.models.userSubscription.findOne({
+        where: {
+          subscriberId: req.user.id,
+          channelId: video.userId,
+          status: 1,
+        },
+        logging: true,
+      });
+
+      mySubscription = !!userSubscription;
     }
 
     const { url, headData } = await getSignedUrlForRead(video.fileKey);
     // Construct the response object
     const response = {
       ...JSON.parse(JSON.stringify(video)),
-      // views: video.views[0] ? video.views[0].viewCount : 0,
-      // likeCount: video.likes[0] ? video.Likes[0].likeCount : 0,
-      // commentCount: video.Comments ? video.Comments.commentCount : 0,
       meLiked,
       meDisliked,
+      mySubscription,
       videoSignedUrl: url,
       contentType: headData.ContentType,
     };

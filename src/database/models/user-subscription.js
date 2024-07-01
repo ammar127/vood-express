@@ -53,7 +53,7 @@ export default function (sequelize) {
     sequelize,
     modelName: 'userSubscription',
     tableName: 'user_subscriptions',
-    timestamps: true,
+    // timestamps: true,
   });
 
 

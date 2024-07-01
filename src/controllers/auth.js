@@ -306,11 +306,23 @@ export const checkUsernameUnique = async (req, res, next) => {
 export const getUserProfile = async (req, res, next) => {
   try {
     const { username } = req.params;
+    let mySubscription = false;
+
     const user = await db.models.user.findOne({ where: { username } });
     if (!user) {
       return next(createError(404, 'User not found!'));
     }
-    return res.json(user);
+    const userSubscription = await db.models.userSubscription.findOne({
+      where: {
+        subscriberId: req.user.id,
+        channelId: user.id,
+        status: 1,
+      },
+      logging: true,
+    });
+
+    mySubscription = !!userSubscription;
+    return res.json({ ...user, mySubscription });
   } catch (err) {
     return next(err);
   }

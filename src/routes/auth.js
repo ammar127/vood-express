@@ -40,9 +40,8 @@ router.get('/profile/:username',
   validate(authValidations.getUserRules),
   authController.getUserProfile);
 
-router.get('/profile/user-subscription/:userId',
-  validate(authValidations.profileUserSubscriptionRules),
-  authController.createProfileUserSubscription)
+router.route('/profile/user-subscription/:userId', validate(authValidations.profileUserSubscriptionRules),)
+  .get(authController.createProfileUserSubscription)
   .delete(isAuthenticated, authController.cancelProfileUserSubscription);
 
 router.get('/user-subscriptions', isAuthenticated, authController.getMyUserSubscriptions);
