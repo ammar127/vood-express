@@ -30,6 +30,7 @@ router.route('/')
 
 router.route('/:id', validate(videoValidations.getVideoRules))
   .get(videoController.getVideoById)
+  .put(videoController.updateVideo)
   .delete(isAuthenticated, videoController.deleteVideo);
 
 router.route('/:id/view', isAuthenticated, validate(videoValidations.getVideoRules))

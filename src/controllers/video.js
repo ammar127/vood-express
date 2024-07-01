@@ -629,7 +629,7 @@ export const deleteVideo = async (req, res, next) => {
       // Delete the video
       await video.destroy();
 
-      return res.status(204).send(); // Send success response with status code 204 (No Content)
+      return res.status(200).send(); // Send success response with status code 204 (No Content)
     }
     // If the video is not found or not associated with the current user
     return res.status(404).json({ message: 'Video not found or not authorized to delete' });
@@ -637,6 +637,41 @@ export const deleteVideo = async (req, res, next) => {
     return next(error);
   }
 };
+
+export const updateVideo = async (req, res, next) => {
+  try {
+    const { id: userId } = req.user; // Get the authenticated user's ID
+    const { id: videoId } = req.params; // Get the video ID from the request parameters
+
+    // Find the video by its ID and user ID to ensure the user owns the video
+    const video = await db.models.video.findOne({
+      where: {
+        id: videoId,
+        userId,
+      },
+    });
+
+    // If the video is not found or not associated with the current user
+    if (!video) {
+      return res.status(404).json({ message: 'Video not found or not authorized to update' });
+    }
+
+
+    video.title = req.body.title;
+    video.categories = req.body.categories;
+    video.visibility = req.body.visibility;
+    video.playerType = req.body.playerType;
+    video.description = req.body.description;
+
+    // Save the changes to the database
+    await video.save();
+
+    return res.json({ message: 'Video updated successfully', video });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 
 /**
  * POST /video/:id/views
