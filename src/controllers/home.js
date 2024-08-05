@@ -52,6 +52,7 @@ export const populateDB = async (req, res) => {
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
         email: faker.internet.email(),
+        username: faker.internet.userName(),
         password: faker.internet.password(),
         createdAt: new Date(),
         updatedAt: new Date(),
